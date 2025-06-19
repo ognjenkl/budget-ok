@@ -61,6 +61,7 @@ BankOK
 Frontend + Monolithic Backend
 
 Architecture Diagram
+![image](https://github.com/user-attachments/assets/f8c0acc0-1839-49f4-ab26-2b7bcd4d7325)
 
 # Tech stack
 FE: React
