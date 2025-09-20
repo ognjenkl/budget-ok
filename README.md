@@ -6,7 +6,7 @@ This is the ATDD Sandbox Project used within the [ATDD Accelerator Program](http
 
 ## Documentation
 
-Read the [Documentation]().
+Read the [Documentation](https://ognjenkl.github.io/budget-ok/).
 
 ## Project Board
 
