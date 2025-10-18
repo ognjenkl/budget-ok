@@ -2,7 +2,7 @@
 
 ## Architecture Style
 
-- Frontend + Monolithic Backend
+- Monolith
 
 ## Architecture Diagram
 
@@ -21,10 +21,8 @@ Database:
 
 ## Repository Strategy
 
-- Multi-Repo approach
+- Mono-Repo approach
 
 ## Component Repositories
 
-[Frontend repository](https://github.com/ognjenkl/budget-ok-web)
-
-[Backend repository](https://github.com/ognjenkl/budget-ok-backend)
+[Repository](https://github.com/ognjenkl/budget-ok-monorepo)
