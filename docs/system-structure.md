@@ -6,7 +6,6 @@
 
 ## Architecture Diagram
 
-Frontend & Monolithic Backend:
 
 ![Frontend & Monolithic Backend](images/architecture.png)
 
