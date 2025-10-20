@@ -1,0 +1,28 @@
+# Test configuration
+spring:
+  datasource:
+    # Testcontainers will set the URL
+    username: budgetok
+    password: budgetok
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 10000
+      max-lifetime: 30000
+      auto-commit: true
+      leak-detection-threshold: 5000
+
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+    enabled: true
+    default-schema: public
+
+# Logging Configuration
+logging:
+  level:
+    org.springframework.jdbc: INFO
+    com.ognjen.budgetok: DEBUG
+    org.testcontainers: INFO
+    com.zaxxer.hikari: INFO
+    liquibase: INFO

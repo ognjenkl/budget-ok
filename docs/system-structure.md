@@ -22,6 +22,3 @@ Database:
 
 - Mono-Repo approach
 
-## Component Repositories
-
-[Repository](https://github.com/ognjenkl/budget-ok-monorepo)
