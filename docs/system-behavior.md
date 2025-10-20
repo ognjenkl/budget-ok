@@ -5,7 +5,7 @@
 ![Use Case Diagram](images/use-case-diagram.png)
 
 Primary Actors:
-- User
+- Client
 
 Use Cases:
 - Add envelope
@@ -26,29 +26,29 @@ Secondary Actors:
 Add expense to envelope
 
 ### Primary Actor
-User
+Client
 
 ### Goal
-The user successfully adds an expense to envelope.
+The client successfully adds an expense to envelope.
 
 ### Preconditions
-- The user is registered and logged into the system.
+- The client is registered and logged into the system.
 
 ### Main Success Scenario
-1. The user enters expense name.
-2. The user enters expense amount.
-3. The user submits the expense.
+1. The client enters expense name.
+2. The client enters expense amount.
+3. The client submits the expense.
 4. The system validates the name length.
 5. The system validates the amount is positive.
 6. The system creates the expense.
-7. The system provides an expense confirmation to the user.
+7. The system provides an expense confirmation to the client.
 
 ### Extensions (Alternative Flows)
 - 4a. Name length is too long:
-    - The system notifies the user that name is too long.
+    - The system notifies the client that name is too long.
 - 5a. Non-positive amount:
-    - The system notifies the user and suggests entering a valid amount.
+    - The system notifies the client and suggests entering a valid amount.
 
 ### Postconditions
 - The expense is created and stored in the system.
-- The user receives an expense confirmation.
+- The client receives an expense confirmation.
