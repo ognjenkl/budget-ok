@@ -2,12 +2,12 @@
 
 ## Architecture Style
 
-- Monolith
+-  Frontend & Backend
 
 ## Architecture Diagram
 
 
-![Frontend & Monolithic Backend](images/architecture.png)
+![Frontend & Backend](images/architecture.png)
 
 ## Tech Stack
 
