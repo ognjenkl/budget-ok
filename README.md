@@ -22,6 +22,6 @@ See the [Project Board](https://github.com/users/ognjenkl/projects/2)
 MIT Licence
 
 ## Contributors
-- [Ognjen](https://github.com/ognjenkl)
+- [Ognjen Klincov](https://github.com/ognjenkl)
 - [Valentina Jemuović](https://github.com/valentinajemuovic)
 

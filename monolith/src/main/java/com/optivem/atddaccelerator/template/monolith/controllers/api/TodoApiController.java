@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/api")
 public class TodoApiController {
 
-//  some comment
     @Value("${todos.api.host}")
     private String todosApiHost;
 
