@@ -4,9 +4,9 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com.optivem.atddaccelerator.template.systemtest'
+group = 'com.ognjen.budgetok.template.systemtest'
 version = '0.0.1-SNAPSHOT'
-description = 'ATDD Accelerator Template - System Test'
+description = 'ATDD Budget OK - System Test'
 
 java {
 	toolchain {

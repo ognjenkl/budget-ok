@@ -1,4 +1,4 @@
-package com.optivem.atddaccelerator.template.systemtest.e2etests;
+package com.ognjen.budgetok.template.systemtest.e2etests;
 
 import com.microsoft.playwright.*;
 import org.junit.jupiter.api.Test;
