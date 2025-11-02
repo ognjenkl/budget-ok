@@ -1,6 +1,6 @@
 services:
 
   monolith:
-    image: ghcr.io/ognjenkl/budget-ok/monolith:latest
+    image: ghcr.io/optivem/atdd-accelerator-template-java-maven/monolith:latest
     ports:
       - "8080:8080"

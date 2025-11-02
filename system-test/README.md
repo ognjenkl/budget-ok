@@ -23,13 +23,13 @@ docker compose up -d
 Run All Tests
 
 ```shell
-.\gradlew test
+./mvnw test
 ```
 
 Run Smoke Tests Only
 
 ```shell
-.\gradlew test --tests com.ognjen.budgetok.template.systemtest.smoketests.*
+./mvnw test -Dtest="com.optivem.atddaccelerator.template.systemtest.smoketests.**"
 ```
 
 Stop Docker Containers

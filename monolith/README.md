@@ -16,34 +16,34 @@ Check that you have Powershell 7
 $PSVersionTable.PSVersion
 ```
 
-Set the JAVA_HOME environment variable to point to your JDK 21 installation. Check that it's set correctly
-
-```shell
-echo $env:JAVA_HOME
-```
-
 Ensure you have JDK 21 installed
 
 ```shell
 java -version
 ```
 
-Build the application using Gradle
+Check that JAVA_HOME is set correctly & points to your JDK 21 installation
 
 ```shell
-.\gradlew build
+echo $env:JAVA_HOME
+```
+
+Build the application using Maven
+
+```shell
+./mvnw clean package
 ```
 
 Run the application
 
 ```shell
-.\gradlew bootRun
+./mvnw spring-boot:run
 ```
 
 Rebuild and restart the application
 
 ```shell
-.\gradlew build && .\gradlew bootRun
+./mvnw clean package && ./mvnw spring-boot:run
 ```
 
 App should now be running on:
