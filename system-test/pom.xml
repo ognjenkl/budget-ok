@@ -12,13 +12,13 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.optivem.atddaccelerator.template.systemtest</groupId>
+    <groupId>com.ognjen.template.systemtest</groupId>
     <artifactId>system-test</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>ATDD Accelerator Template - System Test</name>
-    <description>ATDD Accelerator Template - System Test</description>
+    <name>Budget OK - System Test</name>
+    <description>Budget OK - System Test</description>
 
     <properties>
         <java.version>25</java.version>
