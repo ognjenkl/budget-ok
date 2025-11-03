@@ -1,4 +1,4 @@
-package com.optivem.atddaccelerator.template.monolith.models;
+package com.ognjen.template.monolith.models;
 
 public class Todo {
     private int userId;

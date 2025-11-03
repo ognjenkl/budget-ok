@@ -1,4 +1,4 @@
-package com.optivem.atddaccelerator.template.systemtest.e2etests;
+package com.ognjen.template.systemtest.e2etests;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;

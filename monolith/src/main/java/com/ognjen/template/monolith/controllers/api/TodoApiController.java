@@ -1,6 +1,6 @@
-package com.optivem.atddaccelerator.template.monolith.controllers.api;
+package com.ognjen.template.monolith.controllers.api;
 
-import com.optivem.atddaccelerator.template.monolith.models.Todo;
+import com.ognjen.template.monolith.models.Todo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
