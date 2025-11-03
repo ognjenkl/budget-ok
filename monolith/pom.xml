@@ -17,8 +17,8 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>ATDD Accelerator Template - Monolith</name>
-    <description>ATDD Accelerator Template - Monolith</description>
+    <name>Budget OK - Monolith</name>
+    <description>Budget OK - Monolith</description>
 
     <properties>
         <java.version>17</java.version>
