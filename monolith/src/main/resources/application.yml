@@ -5,3 +5,7 @@ spring:
 todos:
   api:
     host: ${TODOS_API_HOST:https://jsonplaceholder.typicode.com}
+
+bankok:
+  api:
+    host: ${BANKOK_API_HOST:https://dummyjson.com}

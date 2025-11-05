@@ -62,6 +62,26 @@ public class EnvelopeApiController {
         }
     }
 
+    @PostMapping("/transfer")
+    public ResponseEntity<?> transferAmount(@RequestBody TransferRequest request) {
+        try {
+            Envelope sourceEnvelope = envelopeService.transferAmount(
+                    request.getSourceEnvelopeId(),
+                    request.getTargetEnvelopeId(),
+                    request.getAmount(),
+                    request.getMemo()
+            );
+            return ResponseEntity.ok(new TransferResponse(sourceEnvelope, request.getTargetEnvelopeId(), "Transfer successful"));
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("not found")) {
+                return ResponseEntity.status(404).body(new ErrorResponse("Envelope not found: " + e.getMessage()));
+            } else if (e.getMessage().contains("Insufficient balance")) {
+                return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
+            }
+            return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
     // Request DTOs
     public static class CreateEnvelopeRequest {
         private String name;
@@ -113,5 +133,61 @@ public class EnvelopeApiController {
         public void setMemo(String memo) { this.memo = memo; }
         public String getTransactionType() { return transactionType; }
         public void setTransactionType(String transactionType) { this.transactionType = transactionType; }
+    }
+
+    public static class TransferRequest {
+        private long sourceEnvelopeId;
+        private long targetEnvelopeId;
+        private int amount;
+        private String memo;
+
+        public TransferRequest() {}
+        public TransferRequest(long sourceEnvelopeId, long targetEnvelopeId, int amount, String memo) {
+            this.sourceEnvelopeId = sourceEnvelopeId;
+            this.targetEnvelopeId = targetEnvelopeId;
+            this.amount = amount;
+            this.memo = memo;
+        }
+
+        public long getSourceEnvelopeId() { return sourceEnvelopeId; }
+        public void setSourceEnvelopeId(long sourceEnvelopeId) { this.sourceEnvelopeId = sourceEnvelopeId; }
+        public long getTargetEnvelopeId() { return targetEnvelopeId; }
+        public void setTargetEnvelopeId(long targetEnvelopeId) { this.targetEnvelopeId = targetEnvelopeId; }
+        public int getAmount() { return amount; }
+        public void setAmount(int amount) { this.amount = amount; }
+        public String getMemo() { return memo; }
+        public void setMemo(String memo) { this.memo = memo; }
+    }
+
+    public static class TransferResponse {
+        private Envelope sourceEnvelope;
+        private long targetEnvelopeId;
+        private String message;
+
+        public TransferResponse() {}
+        public TransferResponse(Envelope sourceEnvelope, long targetEnvelopeId, String message) {
+            this.sourceEnvelope = sourceEnvelope;
+            this.targetEnvelopeId = targetEnvelopeId;
+            this.message = message;
+        }
+
+        public Envelope getSourceEnvelope() { return sourceEnvelope; }
+        public void setSourceEnvelope(Envelope sourceEnvelope) { this.sourceEnvelope = sourceEnvelope; }
+        public long getTargetEnvelopeId() { return targetEnvelopeId; }
+        public void setTargetEnvelopeId(long targetEnvelopeId) { this.targetEnvelopeId = targetEnvelopeId; }
+        public String getMessage() { return message; }
+        public void setMessage(String message) { this.message = message; }
+    }
+
+    public static class ErrorResponse {
+        private String error;
+
+        public ErrorResponse() {}
+        public ErrorResponse(String error) {
+            this.error = error;
+        }
+
+        public String getError() { return error; }
+        public void setError(String error) { this.error = error; }
     }
 }

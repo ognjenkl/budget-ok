@@ -12,4 +12,5 @@ public interface EnvelopeService {
     void deleteEnvelope(long id);
     Envelope updateEnvelope(long id, String name, int budget);
     Envelope addExpense(long envelopeId, int amount, String memo, String transactionType);
+    Envelope transferAmount(long sourceEnvelopeId, long targetEnvelopeId, int amount, String memo);
 }
