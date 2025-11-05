@@ -171,6 +171,7 @@ cd monolith
 
 ### REST API Endpoints
 
+**Envelope Management:**
 ```
 GET    /api/envelopes           - List all envelopes
 GET    /api/envelopes/{id}      - Get envelope by ID
@@ -178,6 +179,13 @@ POST   /api/envelopes           - Create envelope
 PUT    /api/envelopes/{id}      - Update envelope
 DELETE /api/envelopes/{id}      - Delete envelope
 POST   /api/envelopes/{id}/expenses - Add expense to envelope
+POST   /api/envelopes/transfer  - Transfer amount between envelopes
+```
+
+**Bank OK External System (DummyJSON):**
+```
+GET    /api/bankok/carts/{userId}    - Fetch cart by user ID
+GET    /api/bankok/carts/id/{cartId} - Fetch cart by cart ID
 ```
 
 ### Current Implementation Details
@@ -185,7 +193,10 @@ POST   /api/envelopes/{id}/expenses - Add expense to envelope
 - **Storage**: In-memory (HashMap-based) - resets on application restart
 - **Data Model**: Envelopes with name, budget, and list of expenses
 - **Expenses**: Support WITHDRAW (spending) and DEPOSIT (refunds) transaction types
+- **Transfer**: Move amounts between envelopes with balance validation (insufficient funds protection)
+- **Bank OK Integration**: Connects to DummyJSON (external system) for cart/expense data retrieval
 - **UI**: Responsive grid layout with modals for create/edit/add-expense
+- **E2E Tests**: 7 comprehensive tests covering transfer logic, Bank OK integration, and error handling
 
 ### For More Details
 

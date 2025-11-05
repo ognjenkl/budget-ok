@@ -17,6 +17,19 @@ This document describes the budget management functionality added to the monolit
 - **Expense History**: View recent expenses for each envelope
 - **Automatic Calculation**: Real-time balance updates
 
+### 3. Transfer Functionality
+- **Transfer Between Envelopes**: Move amounts from one envelope to another
+- **Balance Validation**: Ensures sufficient balance before transfer (business logic)
+- **Atomic Operations**: Both source and target envelopes updated consistently
+- **Transaction Records**: Creates WITHDRAW in source and DEPOSIT in target
+- **Error Handling**: Returns appropriate HTTP status codes (400 for insufficient funds, 404 for not found)
+
+### 4. Bank OK External System Integration
+- **DummyJSON Integration**: Connects to DummyJSON API for cart/expense data
+- **Cart Retrieval**: Fetch carts by user ID or cart ID
+- **Configurable Host**: External API host configurable via `bankok.api.host` property
+- **REST Proxy**: Exposes `/api/bankok/*` endpoints for cart data
+
 ## Architecture
 
 ### Backend Components
@@ -32,6 +45,16 @@ This document describes the budget management functionality added to the monolit
   - Properties: id, envelopeId, amount, memo, transactionType, date
   - Transaction types: WITHDRAW, DEPOSIT
 
+- **BankOkCart.java** (`monolith/src/main/java/.../models/BankOkCart.java`)
+  - Maps DummyJSON cart structure from external API
+  - Properties: id, userId, totalProducts, totalQuantity, total, discountedTotal, products
+  - Used for integrating with Bank OK external system
+
+- **BankOkProduct.java** (`monolith/src/main/java/.../models/BankOkProduct.java`)
+  - Represents a product in a cart from Bank OK
+  - Properties: id, title, price, quantity, total, discountedPrice
+  - Maps to expense items for import into envelopes
+
 #### Repository Layer
 - **EnvelopeRepository.java** - Interface for data access operations
 - **InMemoryEnvelopeRepository.java** - In-memory implementation using HashMap
@@ -40,19 +63,26 @@ This document describes the budget management functionality added to the monolit
 
 #### Service Layer
 - **EnvelopeService.java** - Business logic interface
+  - Includes `transferAmount()` method for inter-envelope transfers
 - **EnvelopeServiceImpl.java** - Service implementation
   - Handles envelope creation, updates, and deletion
   - Manages expense additions
+  - Implements transfer logic with balance validation
   - Validates operations
 
 #### Controller Layer
-- **EnvelopeApiController.java** - REST API endpoints
+- **EnvelopeApiController.java** - REST API endpoints for envelope management
   - `GET /api/envelopes` - Get all envelopes
   - `GET /api/envelopes/{id}` - Get envelope by ID
   - `POST /api/envelopes` - Create new envelope
   - `PUT /api/envelopes/{id}` - Update envelope
   - `DELETE /api/envelopes/{id}` - Delete envelope
   - `POST /api/envelopes/{id}/expenses` - Add expense to envelope
+  - `POST /api/envelopes/transfer` - Transfer between envelopes (with request/response DTOs)
+
+- **BankOkApiController.java** - REST API endpoints for Bank OK integration
+  - `GET /api/bankok/carts/{userId}` - Fetch cart by user ID
+  - `GET /api/bankok/carts/id/{cartId}` - Fetch cart by cart ID
 
 - **EnvelopeWebController.java** - Serves the static HTML page
   - `GET /envelopes` - Serves envelopes.html
@@ -90,7 +120,9 @@ monolith/
 ├── src/main/java/com/ognjen/template/monolith/
 │   ├── models/
 │   │   ├── Envelope.java
-│   │   └── Expense.java
+│   │   ├── Expense.java
+│   │   ├── BankOkCart.java
+│   │   └── BankOkProduct.java
 │   ├── repositories/
 │   │   ├── EnvelopeRepository.java
 │   │   └── InMemoryEnvelopeRepository.java
@@ -99,12 +131,13 @@ monolith/
 │   │   └── EnvelopeServiceImpl.java
 │   └── controllers/
 │       ├── api/
-│       │   └── EnvelopeApiController.java
+│       │   ├── EnvelopeApiController.java
+│       │   └── BankOkApiController.java
 │       └── web/
 │           └── EnvelopeWebController.java
 └── src/main/resources/static/
     ├── envelopes.html
-    └── index.html (updated with link)
+    └── index.html (redirects to /envelopes)
 ```
 
 ## Running the Application
@@ -167,17 +200,43 @@ Content-Type: application/json
 DELETE /api/envelopes/1
 ```
 
+### Transfer Between Envelopes
+```bash
+POST /api/envelopes/transfer
+Content-Type: application/json
+
+{
+  "sourceEnvelopeId": 1,
+  "targetEnvelopeId": 2,
+  "amount": 200,
+  "memo": "Transferring from Groceries to Entertainment"
+}
+```
+
+### Fetch Bank OK Cart by User
+```bash
+GET /api/bankok/carts/1
+```
+
+### Fetch Bank OK Cart by ID
+```bash
+GET /api/bankok/carts/id/1
+```
+
 ## Features & Limitations
 
 ### Features
 ✅ Full CRUD operations for envelopes
 ✅ Add expenses to envelopes
+✅ Transfer amounts between envelopes with balance validation
+✅ Bank OK external system integration (DummyJSON)
 ✅ Real-time balance calculation
 ✅ Transaction history per envelope
 ✅ Responsive UI design
 ✅ Form validation
 ✅ Error handling
 ✅ User-friendly interface
+✅ 7 comprehensive E2E tests (transfer logic, Bank OK integration, error scenarios)
 
 ### Limitations
 - Data is stored in-memory (resets on application restart)
@@ -185,6 +244,48 @@ DELETE /api/envelopes/1
 - Single user (no authentication)
 - No multi-user support
 - Limited transaction filtering/searching
+- External API (Bank OK) connection timeout handling not implemented
+- No rate limiting on API endpoints
+
+## E2E Tests
+
+### Test Files
+Located at: `system-test/src/test/java/com/ognjen/template/systemtest/e2etests/`
+
+### Test Suites
+
+#### 1. BankOkApiE2eTest (2 tests)
+- **getBankOkCart_shouldReturnCartWithProducts**: Verifies connection to DummyJSON external API
+- **getBankOkCartById_shouldReturnSpecificCart**: Verifies fetching specific cart by ID
+- **Coverage**: External system integration testing
+
+#### 2. EnvelopeTransferE2eTest (3 tests)
+- **transferAmount_shouldSucceed_whenSufficientBalance**: Happy path transfer validation
+- **transferAmount_shouldFail_whenInsufficientBalance**: Business logic - insufficient funds protection
+- **transferAmount_shouldFail_whenTargetEnvelopeNotFound**: Error handling - 404 not found
+- **Coverage**: CRUD operations, business logic validation, error scenarios
+
+#### 3. BankOkEnvelopeIntegrationE2eTest (2 tests)
+- **syncExpensesFromBankOk_shouldCreateExpensesInEnvelope**: End-to-end Bank OK → Envelope workflow
+- **multipleBankOkCartsCanBeImportedAsEnvelopes**: Multiple cart import integration
+- **Coverage**: Integration testing, combined feature workflows
+
+### Running Tests
+
+```bash
+# Run all E2E tests
+cd system-test
+./mvnw test
+
+# Run specific test class
+./mvnw test -Dtest=EnvelopeTransferE2eTest
+
+# Run specific test method
+./mvnw test -Dtest=EnvelopeTransferE2eTest#transferAmount_shouldSucceed_whenSufficientBalance
+```
+
+### Test Results
+All 7 tests passing with no failures or errors.
 
 ## Future Enhancements
 
