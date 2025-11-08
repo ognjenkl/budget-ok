@@ -196,7 +196,7 @@ GET    /api/bankok/carts/id/{cartId} - Fetch cart by cart ID
 - **Transfer**: Move amounts between envelopes with balance validation (insufficient funds protection)
 - **Bank OK Integration**: Connects to DummyJSON (external system) for cart/expense data retrieval
 - **UI**: Responsive grid layout with modals for create/edit/add-expense
-- **E2E Tests**: 7 comprehensive tests covering transfer logic, Bank OK integration, and error handling
+- **E2E Tests**: Comprehensive test suite covering envelope CRUD, expense operations, transfers, and Bank OK integration
 
 ### For More Details
 
@@ -240,6 +240,12 @@ See `BUDGET_OK_IMPLEMENTATION.md` for:
 
 ### Tests:
 - **E2E Tests**: `system-test/src/test/java/com/ognjen/template/systemtest/e2etests/`
+  - `EnvelopeCrudE2eTest.java`: Envelope CRUD operations (Create, Read all, Read by ID, Update, Delete)
+  - `ExpenseCrudE2eTest.java`: Expense operations (Create WITHDRAW, Create DEPOSIT, Multiple expenses, Read via envelope)
+  - `EnvelopeTransferE2eTest.java`: Transfer operations between envelopes with balance validation
+  - `BankOkEnvelopeIntegrationE2eTest.java`: Integration with external Bank OK system (DummyJSON)
+  - `BankOkApiE2eTest.java`: Bank OK API endpoint validation
+  - `ApiE2eTest.java`: Legacy basic API test
 - **Smoke Tests**: `system-test/src/test/java/com/ognjen/template/systemtest/smoketests/`
 
 ## Build System Notes
