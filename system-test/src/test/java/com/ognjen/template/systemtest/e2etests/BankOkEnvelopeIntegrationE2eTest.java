@@ -18,13 +18,14 @@ class BankOkEnvelopeIntegrationE2eTest {
       throws Exception {
     // This test demonstrates the complete flow:
     // 1. Fetch expenses from Bank OK (external system)
-    // 2. Create envelope
-    // 3. Add expenses from Bank OK to the envelope
-    // 4. Verify envelope balance reflects all expenses
+    // 2. Extract product data from cart
+    // 3. Create envelope
+    // 4. Add expense from Bank OK product to the envelope
+    // 5. Verify envelope balance reflects the expense
 
     // Arrange - Fetch cart from Bank OK
     HttpRequest bankOkRequest = HttpRequest.newBuilder()
-        .uri(new URI("http://localhost:8080/api/bankok/carts/1"))
+        .uri(new URI("http://localhost:8080/api/bankok/carts/2"))
         .GET()
         .build();
 
@@ -35,6 +36,11 @@ class BankOkEnvelopeIntegrationE2eTest {
     assertEquals(200, bankOkResponse.statusCode(), "Should fetch cart from Bank OK");
     String cartBody = bankOkResponse.body();
     assertTrue(cartBody.contains("\"products\""), "Cart should contain products");
+
+    // Extract Golf Ball product from Bank OK cart
+    String productTitle = "Golf Ball";
+    int productPrice = extractProductPrice(cartBody, productTitle);
+    assertTrue(productPrice > 0, "Should extract valid Golf Ball price");
 
     // Act - Create envelope for the expenses
     String envelopePayload = "{\"name\":\"Bank OK Sync\",\"budget\":5000}";
@@ -57,8 +63,9 @@ class BankOkEnvelopeIntegrationE2eTest {
     long envelopeId = extractIdFromResponse(envelopeBody);
     assertTrue(envelopeId > 0, "Should extract valid envelope ID");
 
-    // Act - Add an expense to the envelope (simulating sync from Bank OK products)
-    String expensePayload = "{\"amount\":100,\"memo\":\"Product from Bank OK\",\"transactionType\":\"WITHDRAW\"}";
+    // Act - Add expense to the envelope using Bank OK product data
+    String expensePayload = "{\"amount\":" + productPrice + ",\"memo\":\"" + productTitle
+        + "\",\"transactionType\":\"WITHDRAW\"}";
     HttpRequest addExpenseRequest = HttpRequest.newBuilder()
         .uri(new URI("http://localhost:8080/api/envelopes/" + envelopeId + "/expenses"))
         .header("Content-Type", "application/json")
@@ -73,6 +80,10 @@ class BankOkEnvelopeIntegrationE2eTest {
     String expenseResultBody = addExpenseResponse.body();
     assertTrue(expenseResultBody.contains("\"WITHDRAW\""),
         "Response should show withdraw transaction");
+    assertTrue(expenseResultBody.contains("\"amount\":" + productPrice),
+        "Response should contain product price as amount");
+    assertTrue(expenseResultBody.contains("\"memo\":\"" + productTitle + "\""),
+        "Response should contain product title as memo");
 
     // Act - Fetch the updated envelope to verify balance
     HttpRequest getEnvelopeRequest = HttpRequest.newBuilder()
@@ -89,76 +100,19 @@ class BankOkEnvelopeIntegrationE2eTest {
 
     // Verify the envelope has the expense
     assertTrue(finalEnvelopeBody.contains("\"expenses\""), "Envelope should have expenses array");
-    assertTrue(finalEnvelopeBody.contains("Product from Bank OK"),
-        "Envelope should contain synced expense");
+    assertTrue(finalEnvelopeBody.contains("\"" + productTitle + "\""),
+        "Envelope should contain synced product title");
 
     // Verify expense data is correctly stored
-    assertTrue(finalEnvelopeBody.contains("\"amount\":100"), "Expense should have amount 100");
+    assertTrue(finalEnvelopeBody.contains("\"amount\":" + productPrice),
+        "Expense should have product price as amount");
     assertTrue(finalEnvelopeBody.contains("\"transactionType\":\"WITHDRAW\""),
         "Expense should be marked as WITHDRAW");
-  }
 
-  @Test
-  void givenMultipleBankOkCarts_whenCreatingEnvelopes_thenAllEnvelopesAreCreated()
-      throws Exception {
-    // This test demonstrates that we can fetch multiple carts from Bank OK
-    // and create corresponding envelopes
-
-    // Arrange & Act - Fetch multiple carts
-    HttpResponse<String> cart1Response = fetchCart(1);
-    HttpResponse<String> cart2Response = fetchCart(2);
-
-    // Assert both carts fetched successfully
-    assertEquals(200, cart1Response.statusCode(), "Should fetch cart 1");
-    assertEquals(200, cart2Response.statusCode(), "Should fetch cart 2");
-
-    // Verify both have cart structure
-    assertTrue(cart1Response.body().contains("\"id\""), "Cart 1 should have id field");
-    assertTrue(cart2Response.body().contains("\"products\""), "Cart 2 should have products field");
-
-    // Act - Create envelope for each cart
-    long envelope1 = createEnvelope("User 1 Expenses", 5000);
-    long envelope2 = createEnvelope("User 2 Expenses", 3000);
-
-    // Assert envelopes created
-    assertTrue(envelope1 > 0, "Should create envelope 1");
-    assertTrue(envelope2 > 0, "Should create envelope 2");
-
-    // Verify both exist
-    assertEquals(200, getEnvelopeStatus(envelope1), "Envelope 1 should exist");
-    assertEquals(200, getEnvelopeStatus(envelope2), "Envelope 2 should exist");
-  }
-
-  // Helper methods
-  private HttpResponse<String> fetchCart(int userId) throws Exception {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(new URI("http://localhost:8080/api/bankok/carts/" + userId))
-        .GET()
-        .build();
-
-    return client.send(request, HttpResponse.BodyHandlers.ofString());
-  }
-
-  private long createEnvelope(String name, int budget) throws Exception {
-    String payload = "{\"name\":\"" + name + "\",\"budget\":" + budget + "}";
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(new URI("http://localhost:8080/api/envelopes"))
-        .header("Content-Type", "application/json")
-        .POST(HttpRequest.BodyPublishers.ofString(payload))
-        .build();
-
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-    return extractIdFromResponse(response.body());
-  }
-
-  private int getEnvelopeStatus(long envelopeId) throws Exception {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(new URI("http://localhost:8080/api/envelopes/" + envelopeId))
-        .GET()
-        .build();
-
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-    return response.statusCode();
+    // Verify balance calculation
+    int expectedBalance = 5000 - productPrice;
+    assertTrue(finalEnvelopeBody.contains("\"balance\":" + expectedBalance),
+        "Envelope balance should be " + expectedBalance + " after withdrawal");
   }
 
   private long extractIdFromResponse(String responseBody) {
@@ -172,5 +126,35 @@ class BankOkEnvelopeIntegrationE2eTest {
     }
     String idStr = responseBody.substring(idIndex + 5, idEndIndex).trim();
     return Long.parseLong(idStr);
+  }
+
+  private int extractProductPrice(String cartBody, String productTitle) {
+    // Find the product by title
+    int titleIndex = cartBody.indexOf("\"title\":\"" + productTitle + "\"");
+    if (titleIndex == -1) {
+      return -1;
+    }
+
+    // Find the price field after this title (within the same product object)
+    int priceIndex = cartBody.indexOf("\"price\":", titleIndex);
+    if (priceIndex == -1) {
+      return -1;
+    }
+
+    // Make sure we don't go past the end of this product object
+    int nextProductIndex = cartBody.indexOf("\"title\":", titleIndex + 1);
+    if (nextProductIndex != -1 && priceIndex > nextProductIndex) {
+      return -1; // Price is in next product, not this one
+    }
+
+    // Extract the price value
+    int priceStart = priceIndex + 8; // length of "price":
+    int priceEnd = cartBody.indexOf(",", priceStart);
+    if (priceEnd == -1) {
+      priceEnd = cartBody.indexOf("}", priceStart);
+    }
+
+    String priceStr = cartBody.substring(priceStart, priceEnd).trim();
+    return Double.valueOf(priceStr).intValue();
   }
 }

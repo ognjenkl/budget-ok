@@ -17,15 +17,9 @@ public class BankOkApiController {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @GetMapping("/carts/{userId}")
-    public BankOkCart getCartByUserId(@PathVariable("userId") int userId) {
-        String url = bankOkApiHost + "/carts/user/" + userId;
-        return restTemplate.getForObject(url, BankOkCart.class);
-    }
-
-    @GetMapping("/carts/id/{cartId}")
-    public BankOkCart getCartById(@PathVariable("cartId") int cartId) {
-        String url = bankOkApiHost + "/carts/" + cartId;
+    @GetMapping("/carts/{id}")
+    public BankOkCart getCartByUserId(@PathVariable("id") int id) {
+        String url = bankOkApiHost + "/carts/" + id;
         return restTemplate.getForObject(url, BankOkCart.class);
     }
 }
