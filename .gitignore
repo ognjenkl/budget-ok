@@ -22,3 +22,6 @@ build/
 *.local.json
 .env
 .env.local
+
+# Windows/Shell artifacts
+nul
