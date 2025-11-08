@@ -243,8 +243,7 @@ See `BUDGET_OK_IMPLEMENTATION.md` for:
   - `EnvelopeCrudE2eTest.java`: Envelope CRUD operations (Create, Read all, Read by ID, Update, Delete)
   - `ExpenseCrudE2eTest.java`: Expense operations (Create WITHDRAW, Create DEPOSIT, Multiple expenses, Read via envelope)
   - `EnvelopeTransferE2eTest.java`: Transfer operations between envelopes with balance validation
-  - `BankOkEnvelopeIntegrationE2eTest.java`: Integration with external Bank OK system (DummyJSON)
-  - `BankOkApiE2eTest.java`: Bank OK API endpoint validation
+  - `BankOkEnvelopeIntegrationE2eTest.java`: Integration with external Bank OK system - fetches real product data from DummyJSON and syncs to envelope expenses
   - `ApiE2eTest.java`: Legacy basic API test
 - **Smoke Tests**: `system-test/src/test/java/com/ognjen/template/systemtest/smoketests/`
 

@@ -236,7 +236,7 @@ GET /api/bankok/carts/id/1
 ✅ Form validation
 ✅ Error handling
 ✅ User-friendly interface
-✅ 7 comprehensive E2E tests (transfer logic, Bank OK integration, error scenarios)
+✅ 11+ comprehensive E2E tests (envelope CRUD, expense operations, transfers, Bank OK integration)
 
 ### Limitations
 - Data is stored in-memory (resets on application restart)
@@ -254,38 +254,48 @@ Located at: `system-test/src/test/java/com/ognjen/template/systemtest/e2etests/`
 
 ### Test Suites
 
-#### 1. BankOkApiE2eTest (2 tests)
-- **getBankOkCart_shouldReturnCartWithProducts**: Verifies connection to DummyJSON external API
-- **getBankOkCartById_shouldReturnSpecificCart**: Verifies fetching specific cart by ID
-- **Coverage**: External system integration testing
+#### 1. EnvelopeCrudE2eTest (5 tests)
+- **givenNoEnvelope_whenCreateEnvelope_thenEnvelopeIsCreated**: Envelope creation (CREATE)
+- **givenMultipleEnvelopesExist_whenGetAllEnvelopes_thenReturnAllEnvelopes**: Get all envelopes (READ)
+- **givenExistingEnvelope_whenGetEnvelopeById_thenReturnEnvelope**: Get envelope by ID (READ)
+- **givenExistingEnvelope_whenUpdateEnvelope_thenEnvelopeIsUpdated**: Update envelope (UPDATE)
+- **givenExistingEnvelope_whenDeleteEnvelope_thenEnvelopeIsDeleted**: Delete envelope (DELETE)
+- **Coverage**: Full CRUD operations for envelopes
 
-#### 2. EnvelopeTransferE2eTest (3 tests)
-- **transferAmount_shouldSucceed_whenSufficientBalance**: Happy path transfer validation
-- **transferAmount_shouldFail_whenInsufficientBalance**: Business logic - insufficient funds protection
-- **transferAmount_shouldFail_whenTargetEnvelopeNotFound**: Error handling - 404 not found
-- **Coverage**: CRUD operations, business logic validation, error scenarios
+#### 2. ExpenseCrudE2eTest (4 tests)
+- **givenExistingEnvelope_whenCreateWithdrawExpense_thenExpenseIsAdded**: Add WITHDRAW expense
+- **givenExistingEnvelope_whenCreateDepositExpense_thenExpenseIsAdded**: Add DEPOSIT expense
+- **givenExistingEnvelope_whenCreateMultipleExpenses_thenAllExpensesAreAdded**: Add multiple expenses
+- **givenEnvelopeWithExpenses_whenGetEnvelope_thenAllExpensesAreReturned**: Verify expense retrieval
+- **Coverage**: Expense CREATE and READ operations
 
-#### 3. BankOkEnvelopeIntegrationE2eTest (2 tests)
-- **syncExpensesFromBankOk_shouldCreateExpensesInEnvelope**: End-to-end Bank OK → Envelope workflow
-- **multipleBankOkCartsCanBeImportedAsEnvelopes**: Multiple cart import integration
-- **Coverage**: Integration testing, combined feature workflows
+#### 3. EnvelopeTransferE2eTest (3 tests)
+- **givenSufficientBalance_whenTransferringAmount_thenTransferSucceeds**: Happy path transfer validation
+- **givenInsufficientBalance_whenTransferringAmount_thenTransferFails**: Business logic - insufficient funds protection
+- **givenNonExistentTargetEnvelope_whenTransferringAmount_thenTransferFails**: Error handling - 404 not found
+- **Coverage**: Transfer operations, business logic validation, error scenarios
+
+#### 4. BankOkEnvelopeIntegrationE2eTest (2 tests)
+- **givenBankOkCartAsExpenses_whenSyncingExpenses_thenEnvelopeContainsExpenses**: Extracts real product data from DummyJSON and creates expense
+- **givenMultipleBankOkCarts_whenCreatingEnvelopes_thenAllEnvelopesAreCreated**: Multiple cart handling
+- **Coverage**: External Bank OK integration with real DummyJSON product data extraction
 
 ### Running Tests
 
 ```bash
 # Run all E2E tests
 cd system-test
-./mvnw test
+mvn test
 
 # Run specific test class
-./mvnw test -Dtest=EnvelopeTransferE2eTest
+mvn test -Dtest=EnvelopeTransferE2eTest
 
 # Run specific test method
-./mvnw test -Dtest=EnvelopeTransferE2eTest#transferAmount_shouldSucceed_whenSufficientBalance
+mvn test -Dtest=EnvelopeTransferE2eTest#givenSufficientBalance_whenTransferringAmount_thenTransferSucceeds
 ```
 
 ### Test Results
-All 7 tests passing with no failures or errors.
+11+ tests passing with comprehensive coverage of CRUD operations, business logic, and integration scenarios.
 
 ## Future Enhancements
 
