@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
   <groupId>com.ognjen</groupId>
-  <artifactId>budget-ok-backend</artifactId>
+  <artifactId>backend</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>Budget OK Backend</name>
   <description>BudgetOK app for budgeting</description>

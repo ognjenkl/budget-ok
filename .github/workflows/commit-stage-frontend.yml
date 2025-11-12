@@ -1,20 +1,20 @@
-name: commit-stage-monolith
+name: commit-stage-frontend
 
 on:
   push:
     branches: [ "main" ]
     paths:
-        - 'monolith/**'
-        - '.github/workflows/commit-stage-monolith.yml'
+        - 'frontend/**'
+        - '.github/workflows/commit-stage-frontend.yml'
   pull_request:
     branches: [ "main" ]
     paths:
-        - 'monolith/**'
-        - '.github/workflows/commit-stage-monolith.yml'
+        - 'frontend/**'
+        - '.github/workflows/commit-stage-frontend.yml'
   workflow_dispatch:
 
 concurrency:
-  group: commit-stage-monolith-${{ github.ref }}
+  group: commit-stage-frontend-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -33,27 +33,34 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Setup Java
-      uses: actions/setup-java@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        java-version: 25
-        distribution: temurin
-        cache: maven
-    
-    - name: Make Maven Wrapper executable
-      run: chmod +x ./mvnw
-      working-directory: monolith
+        node-version: '20'
+        cache: 'npm'
 
-    - name: Build with Maven
-      run: ./mvnw clean package
-      working-directory: monolith
+    - name: Install Dependencies
+      run: npm ci
+      working-directory: frontend
+
+    - name: Run Linter
+      run: npm run lint
+      working-directory: frontend
+
+    - name: Run Tests
+      run: npm test
+      working-directory: frontend
+
+    - name: Build Application
+      run: npm run build
+      working-directory: frontend
 
     - name: Publish Docker Image
       id: publish
       uses: optivem/publish-docker-image-action@v1
       with:
-        working-directory: monolith
-        image-name: monolith
+        working-directory: frontend
+        image-name: frontend
         registry: ghcr.io
         registry-username: ${{ github.actor }}
         image-namespace: ${{ github.repository }}
