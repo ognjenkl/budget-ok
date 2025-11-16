@@ -27,7 +27,7 @@ class EnvelopeCrudE2eTest {
 
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-    assertEquals(200, response.statusCode(), "Should return 200 OK");
+    assertEquals(201, response.statusCode(), "Should return 201 OK");
     assertTrue(response.body().contains("\"name\":\"Groceries\""),
         "Response should contain envelope name");
     assertTrue(response.body().contains("\"budget\":1000"), "Response should contain budget");
@@ -116,7 +116,7 @@ class EnvelopeCrudE2eTest {
         .build();
 
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-    assertEquals(200, response.statusCode(), "Should create envelope successfully");
+    assertEquals(201, response.statusCode(), "Should create envelope successfully");
 
     return extractIdFrom(response);
   }

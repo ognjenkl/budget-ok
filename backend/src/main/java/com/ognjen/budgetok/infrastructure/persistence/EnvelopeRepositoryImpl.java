@@ -1,10 +1,8 @@
 package com.ognjen.budgetok.infrastructure.persistence;
 
 import com.ognjen.budgetok.application.Envelope;
-import com.ognjen.budgetok.application.EnvelopeNotFoundException;
 import com.ognjen.budgetok.application.EnvelopeRepository;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
