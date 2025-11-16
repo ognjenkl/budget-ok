@@ -1,6 +1,3 @@
-server:
-  port: 8090
-
 spring:
   application:
     name: budget-ok
@@ -22,6 +19,15 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.xml
     default-schema: public
     clear-checksums: true
+    drop-first: false
+    enabled: true
+    contexts: ${LIQUIBASE_CONTEXTS:}
+    liquibase-schema: public
+    liquibase-tablespace: public
+    user: ${SPRING_DATASOURCE_USERNAME:budgetok}
+    password: ${SPRING_DATASOURCE_PASSWORD:budgetok}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/budgetok}
+    driver-class-name: org.postgresql.Driver
 
 
   profiles:

@@ -19,7 +19,7 @@ public class UiSmokeTest {
             Page page = browser.newPage();
             
             // Navigate and get response
-            Response response = page.navigate("http://localhost:8080/");
+            Response response = page.navigate("http://localhost:5173/");
             
             // Assert
             assertEquals(200, response.status());

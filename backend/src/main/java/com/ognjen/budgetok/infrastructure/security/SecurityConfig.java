@@ -31,7 +31,8 @@ public class SecurityConfig {
                 "/css/**",
                 "/js/**",
                 "/webjars/**",
-                "api/envelopes/**"
+                "api/envelopes/**",
+                "/api/echo"
             ).permitAll()
             // Actuator endpoints (read-only access)
             .requestMatchers("/actuator/health/**").permitAll()
