@@ -42,6 +42,10 @@ jobs:
       run: npm install
       working-directory: frontend
 
+    - name: Install Missing Optional Dependencies
+      run: npm install @rollup/rollup-linux-x64-gnu --no-save
+      working-directory: frontend
+
     - name: Run Linter
       run: npm run lint
       working-directory: frontend
