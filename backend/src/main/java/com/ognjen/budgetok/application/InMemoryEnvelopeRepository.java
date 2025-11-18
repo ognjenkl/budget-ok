@@ -13,12 +13,15 @@ public class InMemoryEnvelopeRepository implements EnvelopeRepository {
 
   @Override
   public List<Envelope> findAll() {
-    return List.of();
+    return new ArrayList<>(envelopes);
   }
 
   @Override
   public Envelope findById(Long id) {
-    return null;
+    return envelopes.stream()
+        .filter(env -> env.getId().equals(id))
+        .findFirst()
+        .orElse(null);
   }
 
   @Override
@@ -35,6 +38,6 @@ public class InMemoryEnvelopeRepository implements EnvelopeRepository {
 
   @Override
   public void deleteById(Long id) {
-
+    envelopes.removeIf(env -> env.getId().equals(id));
   }
 }

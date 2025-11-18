@@ -41,8 +41,12 @@ public class EnvelopeController {
     }
 
     @GetMapping("/{id}")
-    public Envelope getEnvelopeById(@PathVariable long id) {
-        return envelopeService.getById(id);
+    public ResponseEntity<Envelope> getEnvelopeById(@PathVariable long id) {
+        Envelope envelope = envelopeService.getById(id);
+        if (envelope == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(envelope);
     }
 
     @PutMapping("/{id}")
