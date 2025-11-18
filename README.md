@@ -2,7 +2,8 @@
 
 [![pages-build-deployment](https://github.com/ognjenkl/budget-ok/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/ognjenkl/budget-ok/actions/workflows/pages/pages-build-deployment)
 
-[![commit-stage-monolith](https://github.com/ognjenkl/budget-ok/actions/workflows/commit-stage-monolith.yml/badge.svg)](https://github.com/ognjenkl/budget-ok/actions/workflows/commit-stage-monolith.yml)
+[![commit-stage-frontend](https://github.com/ognjenkl/budget-ok/actions/workflows/commit-stage-frontend.yml/badge.svg)](https://github.com/ognjenkl/budget-ok/actions/workflows/commit-stage-frontend.yml)
+[![commit-stage-backend](https://github.com/ognjenkl/budget-ok/actions/workflows/commit-stage-backend.yml/badge.svg)](https://github.com/ognjenkl/budget-ok/actions/workflows/commit-stage-backend.yml)
 [![acceptance-stage](https://github.com/ognjenkl/budget-ok/actions/workflows/acceptance-stage.yml/badge.svg)](https://github.com/ognjenkl/budget-ok/actions/workflows/acceptance-stage.yml)
 [![qa-stage](https://github.com/ognjenkl/budget-ok/actions/workflows/qa-stage.yml/badge.svg)](https://github.com/ognjenkl/budget-ok/actions/workflows/qa-stage.yml)
 [![qa-signoff](https://github.com/ognjenkl/budget-ok/actions/workflows/qa-signoff.yml/badge.svg)](https://github.com/ognjenkl/budget-ok/actions/workflows/qa-signoff.yml)
