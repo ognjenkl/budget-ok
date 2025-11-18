@@ -15,4 +15,6 @@ public interface EnvelopeService {
   Envelope update(long id, Envelope envelope);
 
   Envelope addExpense(long id, ExpenseDto expenseDto);
+
+  TransferResponse transfer(TransferRequest request);
 }

@@ -3,9 +3,12 @@ package com.ognjen.budgetok.presentation;
 import com.ognjen.budgetok.application.Envelope;
 import com.ognjen.budgetok.application.EnvelopeService;
 import com.ognjen.budgetok.application.ExpenseDto;
+import com.ognjen.budgetok.application.TransferRequest;
+import com.ognjen.budgetok.application.TransferResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,5 +65,34 @@ public class EnvelopeController {
     @PostMapping("/{id}/expenses")
     public Envelope addExpenseToEnvelope(@PathVariable long id, @RequestBody ExpenseDto expenseDto) {
         return envelopeService.addExpense(id, expenseDto);
+    }
+
+    @PostMapping("/transfer")
+    public ResponseEntity<?> transfer(@RequestBody TransferRequest request) {
+        try {
+            TransferResponse response = envelopeService.transfer(request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("not found")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ErrorResponse(e.getMessage())
+                );
+            } else if (e.getMessage().contains("Insufficient balance")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ErrorResponse(e.getMessage())
+                );
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponse(e.getMessage())
+            );
+        }
+    }
+
+    static class ErrorResponse {
+        public String message;
+
+        public ErrorResponse(String message) {
+            this.message = message;
+        }
     }
 }

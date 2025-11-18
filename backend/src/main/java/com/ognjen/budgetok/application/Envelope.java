@@ -32,10 +32,15 @@ public class Envelope {
         if (expenses == null || expenses.isEmpty()) {
             return budget;
         }
-        int totalExpenses = expenses.stream()
-                .mapToInt(Expense::getAmount)
-                .sum();
-        return budget - totalExpenses;
+        int balance = budget;
+        for (Expense expense : expenses) {
+            if ("WITHDRAW".equals(expense.getTransactionType())) {
+                balance -= expense.getAmount();
+            } else if ("DEPOSIT".equals(expense.getTransactionType())) {
+                balance += expense.getAmount();
+            }
+        }
+        return balance;
     }
 
     public boolean hasExpenses() {

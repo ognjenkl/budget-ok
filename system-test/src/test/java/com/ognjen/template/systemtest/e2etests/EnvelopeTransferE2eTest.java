@@ -139,7 +139,7 @@ class EnvelopeTransferE2eTest {
         .build();
 
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-    assertEquals(200, response.statusCode(), "Should create envelope successfully");
+    assertEquals(201, response.statusCode(), "Should create envelope successfully");
 
     // Extract ID from response
     String responseBody = response.body();

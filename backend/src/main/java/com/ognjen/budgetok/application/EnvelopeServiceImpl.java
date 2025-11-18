@@ -56,4 +56,46 @@ public class EnvelopeServiceImpl implements EnvelopeService {
     envelope.add(expense);
     return envelopeRepository.save(envelope);
   }
+
+  @Override
+  @Transactional
+  public TransferResponse transfer(TransferRequest request) {
+    // Check if source envelope exists
+    Envelope sourceEnvelope = envelopeRepository.findById(request.sourceEnvelopeId());
+    if (sourceEnvelope == null) {
+      throw new IllegalArgumentException("Source envelope not found");
+    }
+
+    // Check if target envelope exists
+    Envelope targetEnvelope = envelopeRepository.findById(request.targetEnvelopeId());
+    if (targetEnvelope == null) {
+      throw new IllegalArgumentException("Target envelope not found");
+    }
+
+    // Check if source has sufficient balance
+    int sourceBalance = sourceEnvelope.getBalance();
+    if (sourceBalance < request.amount()) {
+      throw new IllegalArgumentException("Insufficient balance");
+    }
+
+    // Create withdrawal expense in source envelope
+    Expense withdrawalExpense = new Expense();
+    withdrawalExpense.setAmount(request.amount());
+    withdrawalExpense.setMemo(request.memo());
+    withdrawalExpense.setTransactionType("WITHDRAW");
+    sourceEnvelope.add(withdrawalExpense);
+
+    // Create deposit expense in target envelope
+    Expense depositExpense = new Expense();
+    depositExpense.setAmount(request.amount());
+    depositExpense.setMemo(request.memo());
+    depositExpense.setTransactionType("DEPOSIT");
+    targetEnvelope.add(depositExpense);
+
+    // Save both envelopes
+    envelopeRepository.save(sourceEnvelope);
+    envelopeRepository.save(targetEnvelope);
+
+    return new TransferResponse("Transfer successful");
+  }
 }
