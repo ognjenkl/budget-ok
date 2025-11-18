@@ -1,7 +1,0 @@
-spring:
-  application:
-    name: monolith
-
-bankok:
-  api:
-    host: ${BANKOK_API_HOST:https://dummyjson.com}
