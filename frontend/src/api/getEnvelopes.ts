@@ -14,14 +14,28 @@ export interface Expense {
 }
 
 export class Envelope {
+  public readonly id: string;
+  public readonly name: string;
+  public readonly budget: number;
+  public readonly expenses: Expense[];
+  public readonly createdAt: string;
+  public readonly updatedAt: string;
+
   constructor(
-    public readonly id: string,
-    public readonly name: string,
-    public readonly budget: number,
-    public readonly expenses: Expense[],
-    public readonly createdAt: string,
-    public readonly updatedAt: string
-  ) {}
+    id: string,
+    name: string,
+    budget: number,
+    expenses: Expense[],
+    createdAt: string,
+    updatedAt: string
+  ) {
+    this.id = id;
+    this.name = name;
+    this.budget = budget;
+    this.expenses = expenses;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 
   addExpense(expense: Omit<Expense, 'id' | 'envelopeId' | 'date'>): Expense {
     const newExpense: Expense = {
