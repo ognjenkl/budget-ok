@@ -7,6 +7,9 @@ COPY package*.json ./
 
 RUN npm install
 
+# Install musl-specific rollup binary for Alpine Linux
+RUN npm install @rollup/rollup-linux-x64-musl --no-save
+
 COPY . .
 
 RUN npm run build
