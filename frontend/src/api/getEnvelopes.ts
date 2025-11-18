@@ -62,7 +62,7 @@ export class Envelope {
 
 export default async function getEnvelopes(includeExpenses: boolean = true): Promise<Envelope[]> {
   const response = await axios.get(`${buildApiPrefix()}/envelopes?includeExpenses=${includeExpenses}`);
-  return response.data.map((envelopeData: any) => Envelope.fromRaw({
+  return response.data.map((envelopeData: Omit<Envelope, 'addExpense' | 'getBalance'>) => Envelope.fromRaw({
     ...envelopeData,
     expenses: envelopeData.expenses || []
   }));

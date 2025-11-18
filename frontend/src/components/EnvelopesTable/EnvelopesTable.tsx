@@ -77,7 +77,7 @@ export default function EnvelopesTable() {
     title: 'Actions',
     key: 'actions',
     width: 200,
-    render: (_: any, record: Envelope) => (
+    render: (_: unknown, record: Envelope) => (
       <Space size="middle">
         <Tooltip title="View Expenses">
           <Button
