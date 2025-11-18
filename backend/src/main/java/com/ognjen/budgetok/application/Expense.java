@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Data
@@ -17,4 +18,6 @@ public class Expense {
     private Long id;
     private int amount;
     private String memo;
+    @Column("transaction_type")
+    private String transactionType;
 }

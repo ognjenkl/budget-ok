@@ -38,4 +38,10 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="3" author="system">
+        <addColumn tableName="envelope_items">
+            <column name="transaction_type" type="VARCHAR(50)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

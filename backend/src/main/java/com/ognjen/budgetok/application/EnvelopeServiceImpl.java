@@ -46,11 +46,13 @@ public class EnvelopeServiceImpl implements EnvelopeService {
   }
 
   @Override
+  @Transactional
   public Envelope addExpense(long id, ExpenseDto expenseDto) {
     Envelope envelope = envelopeRepository.findById(id);
     Expense expense = new Expense();
     expense.setAmount(expenseDto.amount());
     expense.setMemo(expenseDto.memo());
+    expense.setTransactionType(expenseDto.transactionType());
     envelope.add(expense);
     return envelopeRepository.save(envelope);
   }

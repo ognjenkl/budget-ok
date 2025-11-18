@@ -29,7 +29,7 @@ class ExpenseCrudE2eTest {
     HttpResponse<String> response = client.send(request,
         HttpResponse.BodyHandlers.ofString());
 
-    assertEquals(200, response.statusCode(), "Should return 200 OK");
+    assertEquals(201, response.statusCode(), "Should return 201 CREATED");
     String body = response.body();
     assertTrue(body.contains("\"WITHDRAW\""), "Response should contain WITHDRAW transaction");
     assertTrue(body.contains("\"amount\":150"), "Response should contain expense amount");
@@ -51,7 +51,7 @@ class ExpenseCrudE2eTest {
     HttpResponse<String> response = client.send(request,
         HttpResponse.BodyHandlers.ofString());
 
-    assertEquals(200, response.statusCode(), "Should return 200 OK");
+    assertEquals(201, response.statusCode(), "Should return 201 CREATED");
     String body = response.body();
     assertTrue(body.contains("\"DEPOSIT\""), "Response should contain DEPOSIT transaction");
     assertTrue(body.contains("\"amount\":50"), "Response should contain expense amount");
@@ -88,7 +88,7 @@ class ExpenseCrudE2eTest {
         .build();
     HttpResponse<String> response3 = client.send(request3, HttpResponse.BodyHandlers.ofString());
 
-    assertEquals(200, response3.statusCode(), "Should add all expenses");
+    assertEquals(201, response3.statusCode(), "Should add all expenses");
     String body = response3.body();
     assertTrue(body.contains("\"WITHDRAW\""), "Response should contain WITHDRAW transactions");
     assertTrue(body.contains("\"DEPOSIT\""), "Response should contain DEPOSIT transaction");
@@ -129,7 +129,7 @@ class ExpenseCrudE2eTest {
 
     HttpResponse<String> response = client.send(request,
         HttpResponse.BodyHandlers.ofString());
-    assertEquals(200, response.statusCode(), "Should create envelope successfully");
+    assertEquals(201, response.statusCode(), "Should create envelope successfully");
 
     return extractIdFrom(response);
   }
@@ -147,7 +147,7 @@ class ExpenseCrudE2eTest {
 
     HttpResponse<String> response = client.send(request,
         HttpResponse.BodyHandlers.ofString());
-    assertEquals(200, response.statusCode(), "Should add expense successfully");
+    assertEquals(201, response.statusCode(), "Should add expense successfully");
   }
 
   private long extractIdFrom(HttpResponse<String> response) {

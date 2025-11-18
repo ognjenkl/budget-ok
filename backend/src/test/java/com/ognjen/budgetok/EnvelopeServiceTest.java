@@ -56,7 +56,7 @@ public class EnvelopeServiceTest {
     envelope.setBudget(100);
     envelope = service.create(envelope);
     assertThat(envelope.getId()).isNotNull();
-    ExpenseDto expenseDto = new ExpenseDto(100, "expense");
+    ExpenseDto expenseDto = new ExpenseDto(100, "expense", "WITHDRAW");
 
     envelope = service.addExpense(envelope.getId(), expenseDto);
 
@@ -70,7 +70,7 @@ public class EnvelopeServiceTest {
     envelope.setBudget(100);
     envelope = service.create(envelope);
     assertThat(envelope.getId()).isNotNull();
-    ExpenseDto expenseDto = new ExpenseDto(100, "expense");
+    ExpenseDto expenseDto = new ExpenseDto(100, "expense", "WITHDRAW");
 
     envelope = service.addExpense(envelope.getId(), expenseDto);
 
@@ -98,8 +98,8 @@ public class EnvelopeServiceTest {
     envelope.setBudget(1000);
     envelope = service.create(envelope);
     assertThat(envelope.getId()).isNotNull();
-    ExpenseDto expenseDto1 = new ExpenseDto(100, "expense1");
-    ExpenseDto expenseDto2 = new ExpenseDto(200, "expense2");
+    ExpenseDto expenseDto1 = new ExpenseDto(100, "expense1", "WITHDRAW");
+    ExpenseDto expenseDto2 = new ExpenseDto(200, "expense2", "WITHDRAW");
     service.addExpense(envelope.getId(), expenseDto1);
 
     envelope = service.addExpense(envelope.getId(), expenseDto2);
