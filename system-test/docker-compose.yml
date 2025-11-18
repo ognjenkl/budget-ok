@@ -1,6 +1,13 @@
 services:
 
-  monolith:
-    image: ghcr.io/ognjenkl/budget-ok/monolith:latest
+  frontend:
+    image: ghcr.io/ognjenkl/budget-ok/frontend:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  backend:
+    image: ghcr.io/ognjenkl/budget-ok/backend:latest
     ports:
       - "8080:8080"
