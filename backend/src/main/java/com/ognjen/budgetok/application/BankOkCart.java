@@ -1,4 +1,4 @@
-package com.ognjen.template.monolith.models;
+package com.ognjen.budgetok.application;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;

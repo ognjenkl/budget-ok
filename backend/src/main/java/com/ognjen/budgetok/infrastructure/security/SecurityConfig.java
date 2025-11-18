@@ -43,12 +43,13 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             // Public endpoints
             .requestMatchers(
-                loginPath, 
+                loginPath,
                 "/error",
                 "/css/**",
                 "/js/**",
                 "/webjars/**",
-                "api/envelopes/**",
+                "/api/envelopes/**",
+                "/api/bankok/**",
                 "/api/echo"
             ).permitAll()
             // Actuator endpoints (read-only access)

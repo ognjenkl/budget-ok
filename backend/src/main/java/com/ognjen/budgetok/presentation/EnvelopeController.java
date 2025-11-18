@@ -46,7 +46,7 @@ public class EnvelopeController {
     public Envelope updateEnvelope(@PathVariable long id, @RequestBody Envelope envelope) {
         return envelopeService.update(id, envelope);
     }
-    
+
     @PatchMapping("/{id}")
     public Envelope patchEnvelope(@PathVariable long id, @RequestBody Envelope envelope) {
         return envelopeService.update(id, envelope);

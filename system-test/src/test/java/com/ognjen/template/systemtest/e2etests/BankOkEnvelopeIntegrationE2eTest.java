@@ -54,7 +54,7 @@ class BankOkEnvelopeIntegrationE2eTest {
         HttpResponse.BodyHandlers.ofString());
 
     // Assert envelope created
-    assertEquals(200, envelopeResponse.statusCode(), "Should create envelope");
+    assertEquals(201, envelopeResponse.statusCode(), "Should create envelope");
     String envelopeBody = envelopeResponse.body();
     assertTrue(envelopeBody.contains("\"name\":\"Bank OK Sync\""),
         "Envelope should have correct name");
@@ -76,7 +76,7 @@ class BankOkEnvelopeIntegrationE2eTest {
         HttpResponse.BodyHandlers.ofString());
 
     // Assert expense added
-    assertEquals(200, addExpenseResponse.statusCode(), "Should add expense");
+    assertEquals(201, addExpenseResponse.statusCode(), "Should add expense");
     String expenseResultBody = addExpenseResponse.body();
     assertTrue(expenseResultBody.contains("\"WITHDRAW\""),
         "Response should show withdraw transaction");

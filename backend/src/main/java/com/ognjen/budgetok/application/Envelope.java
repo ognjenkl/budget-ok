@@ -1,5 +1,6 @@
 package com.ognjen.budgetok.application;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -21,10 +22,21 @@ public class Envelope {
     private Long id;
     private String name;
     private int budget;
-    
+
     @MappedCollection(idColumn = "envelope_id")
     @Builder.Default
     private List<Expense> expenses = new ArrayList<>();
+
+    @JsonProperty("balance")
+    public int getBalance() {
+        if (expenses == null || expenses.isEmpty()) {
+            return budget;
+        }
+        int totalExpenses = expenses.stream()
+                .mapToInt(Expense::getAmount)
+                .sum();
+        return budget - totalExpenses;
+    }
 
     public boolean hasExpenses() {
         return expenses != null && !expenses.isEmpty();

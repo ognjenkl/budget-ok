@@ -23,6 +23,11 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
 
+# Bank OK external API configuration
+bankok:
+  api:
+    host: ${BANKOK_API_HOST:https://dummyjson.com}
+
 # Actuator configuration
 management:
   endpoints:
