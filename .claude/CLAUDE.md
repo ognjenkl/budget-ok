@@ -245,7 +245,7 @@ Benefits: No DB changes, handles WITHDRAW and DEPOSIT transactions, computed on-
 **Build:**
 - Backend: Maven 3.x+ (Java 17 compilation, Spring Boot 3.5.6 runtime)
   - Output: `backend/target/backend-0.0.1-SNAPSHOT.jar`
-- Frontend: npm (Node v20+)
+- Frontend: npm (Node v20+) - See [budget-ok-web](https://github.com/ognjenkl/budget-ok-web) repository
 - Database: PostgreSQL (local development)
 
 **Backend Dependencies:**
@@ -253,6 +253,7 @@ Benefits: No DB changes, handles WITHDRAW and DEPOSIT transactions, computed on-
 - Liquibase 4.4+, Lombok
 
 **Frontend Dependencies:**
+See [budget-ok-web](https://github.com/ognjenkl/budget-ok-web) repository
 - React 18.2.0, TypeScript 5.8.3, Vite 7.1.7
 - Ant Design 5.27.4, Axios 1.12.2, React Query 5.90.2
 - ESLint 9.36.0
@@ -263,7 +264,13 @@ Benefits: No DB changes, handles WITHDRAW and DEPOSIT transactions, computed on-
 
 ## Recent Changes
 
-### Repository Reorganization (Latest)
+### Frontend Directory Removal (Latest)
+- Removed frontend directory from this repository
+- Frontend code is now in separate repository: [budget-ok-web](https://github.com/ognjenkl/budget-ok-web)
+- This repository now contains only Backend (Spring Boot) and System Tests (Java/Playwright)
+- To work on frontend: clone the [budget-ok-web](https://github.com/ognjenkl/budget-ok-web) repository separately
+
+### Repository Reorganization
 - Frontend moved to separate repository: [budget-ok-web](https://github.com/ognjenkl/budget-ok-web)
 - Removed commit-stage-frontend workflow (frontend built separately)
 - Updated CI/CD pipelines to reference frontend Docker images from separate repository
