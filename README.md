@@ -19,6 +19,10 @@ Read the [Documentation](https://ognjenkl.github.io/budget-ok/)
 
 See the [Project Board](https://github.com/users/ognjenkl/projects/2)
 
+## Component Repositories
+
+- [Frontend](https://github.com/ognjenkl/budget-ok-web)
+
 ## Licence
 MIT Licence
 
