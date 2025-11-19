@@ -12,28 +12,29 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Architecture
 
-**Pattern**: Monorepo with Frontend/Backend separation
+**Pattern**: Multi-repository architecture with separate Backend, Frontend, and System Tests
 
 ### Components:
 
-1. **Backend** (Spring Boot 3.5.6 + Java 17)
+1. **Backend** (Spring Boot 3.5.6 + Java 17) - This repository
    - REST API at `/api/*` on port 8080
    - PostgreSQL + Spring Data JDBC + Liquibase
    - Docker image in GitHub Container Registry
 
-2. **Frontend** (React 18 + TypeScript + Vite)
+2. **Frontend** (React 18 + TypeScript + Vite) - Separate repository: [budget-ok-web](https://github.com/ognjenkl/budget-ok-web)
    - SPA with Ant Design on port 5173
    - Proxies `/api/*` to backend
    - TanStack React Query for state management
+   - Built and published as separate Docker image
 
-3. **System Tests** (Java E2E/API tests)
+3. **System Tests** (Java E2E/API tests) - This repository
    - HTTP client-based API testing (JUnit 5)
    - Playwright for UI testing
-   - Runs after deployment
+   - Runs after deployment using published Docker images
 
 ### CI/CD Pipeline:
-1. **Commit**: Build backend, publish Docker image
-2. **Acceptance**: Deploy and run system tests
+1. **Commit**: Build backend, publish Docker image (frontend built separately in budget-ok-web repo)
+2. **Acceptance**: Deploy backend and frontend images, run system tests
 3. **QA**: QA environment deployment + sign-off
 4. **Production**: Production deployment
 
@@ -50,8 +51,11 @@ mvn clean package -DskipTests # Build without tests
 ```
 
 ### Frontend
+See [budget-ok-web](https://github.com/ognjenkl/budget-ok-web) repository for frontend build commands.
 ```bash
-cd budget-ok-frontend-web
+# Frontend is in separate repository - clone it separately
+git clone https://github.com/ognjenkl/budget-ok-web.git
+cd budget-ok-web
 npm install                # Install
 npm run dev              # Dev server (port 5173)
 npm run build            # Production build
@@ -126,8 +130,9 @@ GET    /api/bankok/carts/id/{cartId} - Fetch by cart ID
    - Create migration in `resources/db/changelog/xml/`
    - Implement service in `application/Service.java`
    - Add REST endpoint in `presentation/Controller.java`
-3. Update frontend React components in `budget-ok-frontend-web/src/`
-4. Run tests: `mvn clean package && mvn test`
+3. Update frontend React components in separate [budget-ok-web](https://github.com/ognjenkl/budget-ok-web) repository
+4. Run backend tests: `mvn clean package && mvn test`
+5. Run system tests: `cd system-test && mvn test` (requires both backend and frontend deployed)
 
 ## Common Issues & Fixes
 
@@ -220,10 +225,11 @@ Benefits: No DB changes, handles WITHDRAW and DEPOSIT transactions, computed on-
 - Config: `backend/src/main/resources/application.yml`
 
 **Frontend:**
-- Entrypoint: `budget-ok-frontend-web/src/main.tsx`
-- App: `budget-ok-frontend-web/src/App.tsx`
-- API clients: `budget-ok-frontend-web/src/api/*.ts`
-- Vite config: `budget-ok-frontend-web/vite.config.ts`
+- Repository: [budget-ok-web](https://github.com/ognjenkl/budget-ok-web)
+- Entrypoint: `src/main.tsx`
+- App: `src/App.tsx`
+- API clients: `src/api/*.ts`
+- Vite config: `vite.config.ts`
 
 **Tests:**
 - E2E tests: `system-test/src/test/java/.../e2etests/`
@@ -257,9 +263,16 @@ Benefits: No DB changes, handles WITHDRAW and DEPOSIT transactions, computed on-
 
 ## Recent Changes
 
-### Monolith Removal (Latest)
+### Repository Reorganization (Latest)
+- Frontend moved to separate repository: [budget-ok-web](https://github.com/ognjenkl/budget-ok-web)
+- Removed commit-stage-frontend workflow (frontend built separately)
+- Updated CI/CD pipelines to reference frontend Docker images from separate repository
+- This repository now focuses on: Backend + System Tests
+- Frontend development and builds now independent
+
+### Monolith Removal
 - Deleted monolith directory - no longer maintaining dual implementation
-- Architecture now: Backend (Spring Boot) + Frontend (React) + System Tests
+- Architecture: Backend (Spring Boot) + Frontend (React) + System Tests
 - All envelope management features in backend with REST API
 
 ### Test Fixes
