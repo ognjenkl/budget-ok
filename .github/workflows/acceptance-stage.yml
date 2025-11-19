@@ -131,7 +131,7 @@ jobs:
         image-urls: ${{ needs.find-latest-images.outputs.image-digest-urls }}
         tag: ${{ steps.generate-version.outputs.version }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
 
     - name: Create Prerelease
       id: create-release
