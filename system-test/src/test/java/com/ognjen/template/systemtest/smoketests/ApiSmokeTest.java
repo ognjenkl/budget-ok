@@ -11,7 +11,7 @@ import java.net.http.HttpResponse;
 class ApiSmokeTest {
 
     @Test
-    void echo_shouldReturn200OK() throws Exception {
+    void givenEchoEndpoint_whenSendingGetRequest_thenShouldReturn200OK() throws Exception {
         // DISCLAIMER: This is an example of a badly written test
         // which unfortunately simulates real-life software test projects.
         // This is the starting point for our ATDD Accelerator exercises.

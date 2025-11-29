@@ -70,6 +70,8 @@ cd system-test
 mvn test                                    # All tests
 mvn test -Dtest=EnvelopeCrudE2eTest        # Specific class
 mvn test -Dtest=EnvelopeCrudE2eTest#testName # Specific method
+mvn test -Dtest=UiSmokeTest                # Frontend smoke test (requires npm run dev on port 5173)
+mvn test -Dtest=ExternalIoSmokeTest        # External DummyJSON API smoke test
 ```
 
 ## Communication & Deployment
@@ -239,6 +241,9 @@ Benefits: No DB changes, handles WITHDRAW and DEPOSIT transactions, computed on-
   - `BankOkEnvelopeIntegrationE2eTest`: Bank OK integration
   - `ApiE2eTest`: Legacy basic API test
 - Smoke tests: `system-test/src/test/java/.../smoketests/`
+  - `UiSmokeTest`: Frontend smoke test on localhost:5173 - verifies HTML response and HTTP 200 using Playwright
+  - `ApiSmokeTest`: Backend API smoke test on localhost:8080
+  - `ExternalIoSmokeTest`: External DummyJSON API smoke test - verifies service availability and JSON response content-type
 
 ## Build System & Dependencies
 
@@ -264,7 +269,18 @@ See [budget-ok-web](https://github.com/ognjenkl/budget-ok-web) repository
 
 ## Recent Changes
 
-### Frontend Directory Removal (Latest)
+### New Smoke Tests (Latest)
+- **UiSmokeTest**: Tests frontend connectivity using Playwright
+  - Navigates to localhost:5173
+  - Verifies HTTP 200 response status
+  - Validates HTML content-type header
+  - Checks for proper HTML structure
+- **ExternalIoSmokeTest**: Tests external DummyJSON API connectivity
+  - Verifies API availability (HTTP 200)
+  - Validates JSON content-type response
+  - Ensures Bank OK integration can reach external service
+
+### Frontend Directory Removal
 - Removed frontend directory from this repository
 - Frontend code is now in separate repository: [budget-ok-web](https://github.com/ognjenkl/budget-ok-web)
 - This repository now contains only Backend (Spring Boot) and System Tests (Java/Playwright)

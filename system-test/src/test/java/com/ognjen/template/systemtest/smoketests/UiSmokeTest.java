@@ -11,7 +11,7 @@ public class UiSmokeTest {
     private static final String BASE_URL = "http://localhost:5173";
 
     @Test
-    void home_shouldReturnHtmlContent() {
+    void givenHomePage_whenRequested_thenShouldReturnValidHtmlContent() {
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.chromium().launch();
             Page page = browser.newPage();

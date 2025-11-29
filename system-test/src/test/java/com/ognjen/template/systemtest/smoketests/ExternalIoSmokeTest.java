@@ -15,7 +15,7 @@ class ExternalIoSmokeTest {
     private final HttpClient client = HttpClient.newHttpClient();
 
     @Test
-    void dummyjsonApi_shouldReturn200OK() throws Exception {
+    void givenDummyJsonApi_whenRequestingCart_thenShouldReturn200OK() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(DUMMYJSON_BASE_URL + "/carts/1"))
                 .GET()
@@ -27,7 +27,7 @@ class ExternalIoSmokeTest {
     }
 
     @Test
-    void dummyjsonApi_shouldReturnJsonContent() throws Exception {
+    void givenDummyJsonApi_whenRequestingCart_thenShouldReturnJsonContent() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(DUMMYJSON_BASE_URL + "/carts/1"))
                 .GET()
