@@ -267,6 +267,17 @@ See [budget-ok-web](https://github.com/ognjenkl/budget-ok-web) repository
 - JUnit 5 (backend unit & E2E tests)
 - Playwright 1.44.0 (UI testing)
 
+## Git Guidelines
+
+See [GIT_GUIDELINES.md](./.claude/GIT_GUIDELINES.md) for detailed guidelines.
+
+**Quick Reference:**
+- Use [Conventional Commits](https://www.conventionalcommits.org/) format: `<type>(<scope>): <description>`
+- **Always ask for permission before committing**
+- Run tests before committing
+- One feature per commit
+- Types: `feat`, `fix`, `test`, `docs`, `refactor`, `chore`, `style`
+
 ## Recent Changes
 
 ### New Smoke Tests (Latest)

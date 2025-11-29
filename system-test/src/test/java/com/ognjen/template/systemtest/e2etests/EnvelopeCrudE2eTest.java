@@ -70,7 +70,8 @@ class EnvelopeCrudE2eTest {
     String body = response.body();
     assertTrue(body.contains("\"name\":\"Shopping\""), "Response should contain envelope name");
     assertTrue(body.contains("\"budget\":750"), "Response should contain budget");
-    assertTrue(body.contains("\"id\":" + envelopeId), "Response should contain correct envelope ID");
+    assertTrue(body.contains("\"id\":" + envelopeId),
+        "Response should contain correct envelope ID");
   }
 
   @Test
@@ -105,6 +106,54 @@ class EnvelopeCrudE2eTest {
         HttpResponse.BodyHandlers.ofString());
 
     assertEquals(204, response.statusCode(), "Should return 204 No Content");
+  }
+
+  @Test
+  void givenEmptyName_whenCreateEnvelope_thenReturnBadRequest() throws Exception {
+
+    String payload = "{\"name\":\"\",\"budget\":1000}";
+
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(new URI(baseUrl))
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(payload))
+        .build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+    assertEquals(400, response.statusCode(), "Should return 400 Bad Request for empty name");
+  }
+
+  @Test
+  void givenNullName_whenCreateEnvelope_thenReturnBadRequest() throws Exception {
+
+    String payload = "{\"budget\":1000}";
+
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(new URI(baseUrl))
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(payload))
+        .build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+    assertEquals(400, response.statusCode(), "Should return 400 Bad Request for missing name");
+  }
+
+  @Test
+  void givenNegativeBudget_whenCreateEnvelope_thenReturnBadRequest() throws Exception {
+
+    String payload = "{\"name\":\"Invalid\",\"budget\":-100}";
+
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(new URI(baseUrl))
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(payload))
+        .build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+    assertEquals(400, response.statusCode(), "Should return 400 Bad Request for negative budget");
   }
 
   private long createEnvelope(String name, int budget) throws Exception {
