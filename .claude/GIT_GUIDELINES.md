@@ -29,12 +29,52 @@ test(repository): add integration tests for findById
 
 ## Permission Protocol
 
-**Always ask for permission before committing:**
+**MANDATORY WORKFLOW - Must follow in exact order:**
 
-1. Show the user what files will be committed
-2. Display the proposed commit message
-3. Wait for explicit approval ("yes", "proceed", etc.)
-4. Only commit if approved
+You MUST follow these steps in order. Do not skip or reorder them.
+
+### Step 1: Show Files
+List all files that will be committed using `git status` and `git diff`
+
+### Step 2: Show Commit Message (MANDATORY - DO NOT SKIP)
+Display the proposed commit message using this EXACT template:
+
+```
+FILES TO COMMIT:
+- <file path 1>
+- <file path 2>
+
+COMMIT MESSAGE:
+<type>(<scope>): <description>
+
+<optional longer description if needed>
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+### Step 3: Ask for Approval
+Only after showing both files AND the full message, ask:
+"May I proceed with this commit?"
+
+### Step 4: Wait for Approval
+Wait for explicit user approval ("yes", "proceed", "ok", etc.)
+
+### Step 5: Execute Commit
+Only then run: `git add <files> && git commit -m "..."`
+
+---
+
+## ⚠️ CRITICAL VIOLATIONS (DO NOT DO THESE)
+
+- ❌ DO NOT commit without showing the message
+- ❌ DO NOT ask for approval before showing the message
+- ❌ DO NOT assume implied approval
+- ❌ DO NOT skip Step 2 - showing the full commit message is MANDATORY
+- ❌ DO NOT say "May I commit?" without first displaying the message in the template above
+
+**NOTE**: Claude has violated this protocol twice. This guideline exists to prevent that. If you see the assistant asking for approval without showing the full message in the template, reject it and demand the proper workflow.
 
 ## File Exclusions
 
