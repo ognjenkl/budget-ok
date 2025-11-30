@@ -4,7 +4,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -124,10 +128,10 @@ class EnvelopeCrudE2eTest {
     assertEquals(400, response.statusCode(), "Should return 400 Bad Request for empty name");
   }
 
-  @Test
-  void givenNullName_whenCreateEnvelope_thenReturnBadRequest() throws Exception {
-
-    String payload = "{\"budget\":1000}";
+  @ParameterizedTest(name = "{1}")
+  @MethodSource("provideInvalidEnvelopePayloads")
+  void givenInvalidInput_whenCreateEnvelope_thenReturnBadRequest(String payload, String description)
+      throws Exception {
 
     HttpRequest request = HttpRequest.newBuilder()
         .uri(new URI(baseUrl))
@@ -137,7 +141,18 @@ class EnvelopeCrudE2eTest {
 
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-    assertEquals(400, response.statusCode(), "Should return 400 Bad Request for missing name");
+    assertEquals(400, response.statusCode(), "Should return 400 Bad Request for: " + description);
+  }
+
+  private static Stream<Arguments> provideInvalidEnvelopePayloads() {
+    return Stream.of(
+        Arguments.of("{\"name\":\"\",\"budget\":1000}",
+            "empty name"
+        ),
+        Arguments.of("{\"budget\":1000}",
+            "missing name"
+        )
+    );
   }
 
   @Test
