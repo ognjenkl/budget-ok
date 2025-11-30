@@ -156,6 +156,22 @@ class EnvelopeCrudE2eTest {
     assertEquals(400, response.statusCode(), "Should return 400 Bad Request for negative budget");
   }
 
+  @Test
+  void givenNonIntegerBudget_whenCreateEnvelope_thenReturnBadRequest() throws Exception {
+
+    String payload = "{\"name\":\"Invalid\",\"budget\":\"not-a-number\"}";
+
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(new URI(baseUrl))
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(payload))
+        .build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+    assertEquals(400, response.statusCode(), "Should return 400 Bad Request for non-integer budget type");
+  }
+
   private long createEnvelope(String name, int budget) throws Exception {
     String payload = "{\"name\":\"" + name + "\",\"budget\":" + budget + "}";
     HttpRequest request = HttpRequest.newBuilder()
