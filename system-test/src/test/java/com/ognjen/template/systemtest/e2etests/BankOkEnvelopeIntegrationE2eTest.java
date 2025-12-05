@@ -25,7 +25,7 @@ class BankOkEnvelopeIntegrationE2eTest {
 
     // Arrange - Fetch cart from Bank OK
     HttpRequest bankOkRequest = HttpRequest.newBuilder()
-        .uri(new URI("http://localhost:8080/api/bankok/carts/2"))
+        .uri(new URI("http://localhost:8080/api/bankok/expenses"))
         .GET()
         .build();
 
