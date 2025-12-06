@@ -9,40 +9,61 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SubscriptionDiscountE2eTest {
+class SubscriptionE2eTest {
 
   private final HttpClient client = HttpClient.newHttpClient();
 
   @Test
+  void givenCalculatePriceEndpoint_whenCallingWithPrice_thenCannotVerifyExactTaxAmountFromExternalBankOk()
+      throws Exception {
+
+    int basePrice = 100;
+
+    // Act - Call calculate-price endpoint which internally calls Bank OK for tax
+    String pricePayload = "{\"price\":" + basePrice + "}";
+    HttpRequest priceRequest = HttpRequest.newBuilder()
+        .uri(new URI("http://localhost:8080/api/subscription/calculate-tax"))
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(pricePayload))
+        .build();
+
+    HttpResponse<String> priceResponse = client.send(priceRequest,
+        HttpResponse.BodyHandlers.ofString());
+
+    // Assert - Verify the price calculation was successful
+    assertEquals(200, priceResponse.statusCode(),
+        "Should calculate price with Bank OK tax");
+
+    String priceResponseBody = priceResponse.body();
+    assertTrue(priceResponseBody.contains("\"finalPrice\""),
+        "Response should contain finalPrice field");
+
+    // Extract the finalPrice from response
+    int finalPrice = extractPriceFromResponse(priceResponseBody, "finalPrice");
+    assertTrue(finalPrice > 0,
+        "finalPrice should be a valid positive price");
+
+    // Assert - Verify tax was applied (finalPrice > basePrice)
+    // This proves Bank OK's tax was applied, but we DON'T verify the EXACT amount
+    assertTrue(finalPrice > basePrice,
+        "finalPrice ("
+            + finalPrice
+            + ") should be greater than basePrice ("
+            + basePrice
+            + ") due to Bank OK tax");
+
+  }
+
+  @Test
   void givenSubscriptionEndpoint_whenCallingWithPrice_thenCannotVerifyExactDiscountedPriceFromExternalBankOk()
       throws Exception {
-    // This test demonstrates an E2E scenario where we CANNOT verify an exact output value
-    // because we cannot control the external I/O system (Bank OK's subscription discount).
-    //
-    // Scenario:
-    // 1. E2E test calls /api/subscription endpoint with originalPrice: 100
-    // 2. Backend internally calls Bank OK's subscription-discount endpoint
-    // 3. Bank OK returns a discount (which we cannot control or predict)
-    // 4. Backend calculates: finalPrice = originalPrice - bankOkDiscount
-    // 5. Backend returns the finalPrice to us
-    //
-    // What we CAN verify:
-    // - The subscription calculation was successful (200 status)
-    // - A finalPrice was returned
-    // - The finalPrice is less than the original price
-    //
-    // What we CANNOT verify:
-    // - The exact finalPrice value (e.g., assertEquals(85, finalPrice))
-    // - The exact discount amount from Bank OK
-    // Because Bank OK's discount is determined by their external system,
-    // we have read-only access, and we cannot control/modify the discount.
 
     int originalPrice = 100;
 
     // Act - Call subscription endpoint which internally uses Bank OK's discount
     String subscriptionPayload = "{\"price\":" + originalPrice + "}";
     HttpRequest subscriptionRequest = HttpRequest.newBuilder()
-        .uri(new URI("http://localhost:8080/api/calculate-subscription"))
+        .uri(new URI("http://localhost:8080/api/subscription/calculate-discount"))
         .header("Content-Type", "application/json")
         .POST(HttpRequest.BodyPublishers.ofString(subscriptionPayload))
         .build();
