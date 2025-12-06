@@ -7,6 +7,7 @@ import java.net.http.HttpResponse;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BankOkEnvelopeIntegrationE2eTest {
@@ -14,105 +15,103 @@ class BankOkEnvelopeIntegrationE2eTest {
   private final HttpClient client = HttpClient.newHttpClient();
 
   @Test
-  void givenBankOkCartAsExpenses_whenSyncingExpenses_thenEnvelopeContainsExpenses()
+  void givenElectronicsEnvelope_whenAddingExpenseToBankOkAndSyncing_thenExpenseAppearsInEnvelope()
       throws Exception {
-    // This test demonstrates the complete flow:
-    // 1. Fetch expenses from Bank OK (external system)
-    // 2. Extract product data from cart
-    // 3. Create envelope
-    // 4. Add expense from Bank OK product to the envelope
-    // 5. Verify envelope balance reflects the expense
 
-    // Arrange - Fetch cart from Bank OK
-    HttpRequest bankOkRequest = HttpRequest.newBuilder()
-        .uri(new URI("http://localhost:8080/api/bankok/expenses"))
+    String envelopeName = "electronics";
+
+    // Arrange - Sync Bank OK first to get clean state
+    HttpRequest syncBankOkBeforeRequest = HttpRequest.newBuilder()
+        .uri(new URI("http://localhost:8080/api/bankok/sync-bank-ok"))
+        .POST(HttpRequest.BodyPublishers.noBody())
+        .build();
+
+    HttpResponse<String> syncBankOkBeforeResponse = client.send(syncBankOkBeforeRequest,
+        HttpResponse.BodyHandlers.ofString());
+
+    assertEquals(204, syncBankOkBeforeResponse.statusCode(),
+        "Should sync Bank OK before test");
+
+    // Arrange - Get electronics envelope ID first
+    HttpRequest getElectronicsEnvelopeRequest = HttpRequest.newBuilder()
+        .uri(new URI("http://localhost:8080/api/envelopes?name=" + envelopeName))
         .GET()
         .build();
 
-    HttpResponse<String> bankOkResponse = client.send(bankOkRequest,
+    HttpResponse<String> getElectronicsEnvelopeResponse = client.send(getElectronicsEnvelopeRequest,
         HttpResponse.BodyHandlers.ofString());
 
-    // Assert Bank OK call succeeded
-    assertEquals(200, bankOkResponse.statusCode(), "Should fetch cart from Bank OK");
-    String cartBody = bankOkResponse.body();
-    assertTrue(cartBody.contains("\"products\""), "Cart should contain products");
+    assertEquals(200, getElectronicsEnvelopeResponse.statusCode(),
+        "Should fetch electronics envelope");
+    String electronicsEnvelopeBody = getElectronicsEnvelopeResponse.body();
 
-    // Extract Golf Ball product from Bank OK cart
-    String productTitle = "Golf Ball";
-    int productPrice = extractProductPrice(cartBody, productTitle);
-    assertTrue(productPrice > 0, "Should extract valid Golf Ball price");
+    // Extract electronics envelope ID
+    long electronicsEnvelopeId = extractIdFromResponse(electronicsEnvelopeBody);
+    assertTrue(electronicsEnvelopeId > 0,
+        "Should extract valid electronics envelope ID");
 
-    // Act - Create envelope for the expenses
-    String envelopePayload = "{\"name\":\"Bank OK Sync\",\"budget\":5000}";
-    HttpRequest createEnvelopeRequest = HttpRequest.newBuilder()
-        .uri(new URI("http://localhost:8080/api/envelopes"))
+    // Act - Create expense in Bank OK external API (localhost:8081)
+    String expenseTitle = "Samsung 25";
+    int expensePrice = 250;
+    String bankOkExpensePayload = "{\"title\":\"" + expenseTitle + "\",\"price\":"
+        + expensePrice + ",\"envelopeName\":\"" + envelopeName + "\",\"transactionType\":\"WITHDRAW\"}";
+    HttpRequest createBankOkExpenseRequest = HttpRequest.newBuilder()
+        .uri(new URI("http://localhost:8081/api/expenses/create-expense"))
         .header("Content-Type", "application/json")
-        .POST(HttpRequest.BodyPublishers.ofString(envelopePayload))
+        .POST(HttpRequest.BodyPublishers.ofString(bankOkExpensePayload))
         .build();
 
-    HttpResponse<String> envelopeResponse = client.send(createEnvelopeRequest,
+    HttpResponse<String> createBankOkExpenseResponse = client.send(createBankOkExpenseRequest,
         HttpResponse.BodyHandlers.ofString());
 
-    // Assert envelope created
-    assertEquals(201, envelopeResponse.statusCode(), "Should create envelope");
-    String envelopeBody = envelopeResponse.body();
-    assertTrue(envelopeBody.contains("\"name\":\"Bank OK Sync\""),
-        "Envelope should have correct name");
+    assertEquals(201, createBankOkExpenseResponse.statusCode(),
+        "Should create expense in Bank OK");
+    String bankOkExpenseResponseBody = createBankOkExpenseResponse.body();
+    long bankOkExpenseId = extractIdFromResponse(bankOkExpenseResponseBody);
+    assertTrue(bankOkExpenseId > 0,
+        "Should extract valid Bank OK expense ID");
 
-    // Extract envelope ID
-    long envelopeId = extractIdFromResponse(envelopeBody);
-    assertTrue(envelopeId > 0, "Should extract valid envelope ID");
+    // Arrange - Verify the expense ID is not in the envelope initially
+    assertFalse(electronicsEnvelopeBody.contains("\"id\":" + bankOkExpenseId),
+        "Electronics envelope should not have Bank OK expense (ID: " + bankOkExpenseId + ") initially");
 
-    // Act - Add expense to the envelope using Bank OK product data
-    String expensePayload = "{\"amount\":" + productPrice + ",\"memo\":\"" + productTitle
-        + "\",\"transactionType\":\"WITHDRAW\"}";
-    HttpRequest addExpenseRequest = HttpRequest.newBuilder()
-        .uri(new URI("http://localhost:8080/api/envelopes/" + envelopeId + "/expenses"))
-        .header("Content-Type", "application/json")
-        .POST(HttpRequest.BodyPublishers.ofString(expensePayload))
+    // Act - Call sync-bank-ok endpoint to sync expenses to envelopes
+    HttpRequest syncBankOkRequest = HttpRequest.newBuilder()
+        .uri(new URI("http://localhost:8080/api/bankok/sync-bank-ok"))
+        .POST(HttpRequest.BodyPublishers.noBody())
         .build();
 
-    HttpResponse<String> addExpenseResponse = client.send(addExpenseRequest,
+    HttpResponse<String> syncBankOkResponse = client.send(syncBankOkRequest,
         HttpResponse.BodyHandlers.ofString());
 
-    // Assert expense added
-    assertEquals(201, addExpenseResponse.statusCode(), "Should add expense");
-    String expenseResultBody = addExpenseResponse.body();
-    assertTrue(expenseResultBody.contains("\"WITHDRAW\""),
-        "Response should show withdraw transaction");
-    assertTrue(expenseResultBody.contains("\"amount\":" + productPrice),
-        "Response should contain product price as amount");
-    assertTrue(expenseResultBody.contains("\"memo\":\"" + productTitle + "\""),
-        "Response should contain product title as memo");
+    assertEquals(204, syncBankOkResponse.statusCode(),
+        "Should sync Bank OK expenses to envelopes");
 
-    // Act - Fetch the updated envelope to verify balance
-    HttpRequest getEnvelopeRequest = HttpRequest.newBuilder()
-        .uri(new URI("http://localhost:8080/api/envelopes/" + envelopeId))
+    // Act - Get electronics envelope again to verify Samsung 25 expense is now there
+    HttpRequest getUpdatedElectronicsEnvelopeRequest = HttpRequest.newBuilder()
+        .uri(new URI("http://localhost:8080/api/envelopes/" + electronicsEnvelopeId))
         .GET()
         .build();
 
-    HttpResponse<String> getEnvelopeResponse = client.send(getEnvelopeRequest,
+    HttpResponse<String> getUpdatedElectronicsEnvelopeResponse = client.send(
+        getUpdatedElectronicsEnvelopeRequest,
         HttpResponse.BodyHandlers.ofString());
 
-    // Assert final verification
-    assertEquals(200, getEnvelopeResponse.statusCode(), "Should fetch updated envelope");
-    String finalEnvelopeBody = getEnvelopeResponse.body();
+    assertEquals(200, getUpdatedElectronicsEnvelopeResponse.statusCode(),
+        "Should fetch updated electronics envelope");
+    String updatedElectronicsEnvelopeBody = getUpdatedElectronicsEnvelopeResponse.body();
 
-    // Verify the envelope has the expense
-    assertTrue(finalEnvelopeBody.contains("\"expenses\""), "Envelope should have expenses array");
-    assertTrue(finalEnvelopeBody.contains("\"" + productTitle + "\""),
-        "Envelope should contain synced product title");
-
-    // Verify expense data is correctly stored
-    assertTrue(finalEnvelopeBody.contains("\"amount\":" + productPrice),
-        "Expense should have product price as amount");
-    assertTrue(finalEnvelopeBody.contains("\"transactionType\":\"WITHDRAW\""),
-        "Expense should be marked as WITHDRAW");
-
-    // Verify balance calculation
-    int expectedBalance = 5000 - productPrice;
-    assertTrue(finalEnvelopeBody.contains("\"balance\":" + expectedBalance),
-        "Envelope balance should be " + expectedBalance + " after withdrawal");
+    // Assert - Verify Samsung 25 expense is now in the envelope
+    assertTrue(updatedElectronicsEnvelopeBody.contains("\"expenses\""),
+        "Electronics envelope should have expenses array");
+    assertTrue(updatedElectronicsEnvelopeBody.contains("\"bankExpenseId\":" + bankOkExpenseId),
+        "Electronics envelope should contain Bank OK expense (bankExpenseId: " + bankOkExpenseId + ") after sync");
+    assertTrue(updatedElectronicsEnvelopeBody.contains("\"" + expenseTitle + "\""),
+        "Electronics envelope should contain Samsung 25 expense after sync");
+    assertTrue(updatedElectronicsEnvelopeBody.contains("\"amount\":" + expensePrice),
+        "Samsung 25 expense should have correct price");
+    assertTrue(updatedElectronicsEnvelopeBody.contains("\"transactionType\":\"WITHDRAW\""),
+        "Samsung 25 expense should be marked as WITHDRAW");
   }
 
   private long extractIdFromResponse(String responseBody) {
@@ -128,30 +127,36 @@ class BankOkEnvelopeIntegrationE2eTest {
     return Long.parseLong(idStr);
   }
 
-  private int extractProductPrice(String cartBody, String productTitle) {
-    // Find the product by title
-    int titleIndex = cartBody.indexOf("\"title\":\"" + productTitle + "\"");
+  private int extractExpensePrice(String cartBody, String expenseTitle) {
+    // Find the expense by title
+    int titleIndex = cartBody.indexOf("\"title\":\"" + expenseTitle + "\"");
     if (titleIndex == -1) {
       return -1;
     }
 
-    // Find the price field after this title (within the same product object)
+    // Find the price field after this title (within the same expense object)
     int priceIndex = cartBody.indexOf("\"price\":", titleIndex);
     if (priceIndex == -1) {
       return -1;
     }
 
-    // Make sure we don't go past the end of this product object
-    int nextProductIndex = cartBody.indexOf("\"title\":", titleIndex + 1);
-    if (nextProductIndex != -1 && priceIndex > nextProductIndex) {
-      return -1; // Price is in next product, not this one
+    // Make sure we don't go past the end of this expense object
+    int nextExpenseIndex = cartBody.indexOf("\"title\":", titleIndex + 1);
+    if (nextExpenseIndex != -1 && priceIndex > nextExpenseIndex) {
+      return -1; // Price is in next expense, not this one
     }
 
     // Extract the price value
     int priceStart = priceIndex + 8; // length of "price":
-    int priceEnd = cartBody.indexOf(",", priceStart);
-    if (priceEnd == -1) {
-      priceEnd = cartBody.indexOf("}", priceStart);
+    int priceEnd = priceStart;
+
+    // Find the end of the number
+    while (priceEnd < cartBody.length()) {
+      char c = cartBody.charAt(priceEnd);
+      if (!Character.isDigit(c) && c != '.') {
+        break;
+      }
+      priceEnd++;
     }
 
     String priceStr = cartBody.substring(priceStart, priceEnd).trim();
