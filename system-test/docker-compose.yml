@@ -33,7 +33,7 @@ services:
     ports:
       - "8081:8081"
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/api/expenses"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -46,7 +46,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/budgetok
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
-      BANKOK_HOST: http://bank-ok:8080
+      BANKOK_HOST: http://bank-ok:8081
     depends_on:
       db:
         condition: service_healthy
