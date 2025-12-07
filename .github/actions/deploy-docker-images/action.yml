@@ -45,6 +45,14 @@ runs:
       shell: bash
       working-directory: system-test
 
+    - name: Wait for Bank OK to be Ready
+      uses: optivem/wait-for-docker-compose-action@v1
+      with:
+        url: 'http://localhost:8081/'
+        max-attempts: '30'
+        wait-seconds: '10'
+        working-directory: system-test
+
     - name: Wait for Backend to be Ready
       uses: optivem/wait-for-docker-compose-action@v1
       with:

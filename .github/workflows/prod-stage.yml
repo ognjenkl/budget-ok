@@ -62,6 +62,7 @@ jobs:
           base-image-urls: |
             ghcr.io/${{ github.repository_owner }}/budget-ok-web/frontend
             ghcr.io/${{ github.repository_owner }}/budget-ok-backend/backend
+            ghcr.io/${{ github.repository_owner }}/bank-ok-repo/bank-ok:latest
 
   tag-docker-images:
     needs: [generate-production-version, check-release-exists, resolve-docker-images]
