@@ -32,11 +32,6 @@ services:
     image: ghcr.io/ognjenkl/bank-ok-repo/bank-ok:latest
     ports:
       - "8081:8081"
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   backend:
     image: ghcr.io/ognjenkl/budget-ok-backend/backend:latest
@@ -49,8 +44,6 @@ services:
       BANKOK_HOST: http://bank-ok:8080
     depends_on:
       db:
-        condition: service_healthy
-      bank-ok:
         condition: service_healthy
 
 volumes:
