@@ -11,25 +11,25 @@ import java.net.http.HttpResponse;
 
 class ExternalIoSmokeTest {
 
-    private static final String DUMMYJSON_BASE_URL = "https://dummyjson.com";
+    private static final String BANKOK_BASE_URL = "http://localhost:8081/api/expenses";
     private final HttpClient client = HttpClient.newHttpClient();
 
     @Test
-    void givenDummyJsonApi_whenRequestingCart_thenShouldReturn200OK() throws Exception {
+    void givenBankOkService_whenRequestingHealthCheck_thenShouldReturn200OK() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(DUMMYJSON_BASE_URL + "/carts/1"))
+                .uri(new URI(BANKOK_BASE_URL))
                 .GET()
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, response.statusCode(), "DummyJSON API should return 200 OK");
+        assertEquals(200, response.statusCode(), "Bank OK service should return 200 OK");
     }
 
     @Test
-    void givenDummyJsonApi_whenRequestingCart_thenShouldReturnJsonContent() throws Exception {
+    void givenBankOkService_whenRequestingHealthCheck_thenShouldReturnJsonContent() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(DUMMYJSON_BASE_URL + "/carts/1"))
+                .uri(new URI(BANKOK_BASE_URL))
                 .GET()
                 .build();
 
