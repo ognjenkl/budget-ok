@@ -55,7 +55,7 @@ class SubscriptionE2eTest {
   }
 
   @Test
-  void givenSubscriptionEndpoint_whenCallingWithPrice_thenCannotVerifyExactDiscountedPriceFromExternalBankOk()
+  void givenSubscriptionEndpoint_whenCallingWithPrice_thenCannotVerifyExactDiscountedPriceBeforeAndAfter4Pm()
       throws Exception {
 
     int originalPrice = 100;
